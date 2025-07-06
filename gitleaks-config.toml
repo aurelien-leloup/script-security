@@ -1,0 +1,34 @@
+title = "Custom Gitleaks Config for Insecure Bash Script"
+description = "Detects hardcoded AWS keys and generic tokens in insecure automation scripts"
+version = "3.0"
+
+[allowlist]
+description = "No paths or commits excluded"
+files = []
+
+[[rules]]
+id = "aws-access-key"
+description = "AWS Access Key ID"
+regex = '''(?i)(aws(.{0,20})?access(.{0,20})?key(.{0,20})?(id)?)?[\s'"]{0,3}(=|:|=>)?[\s'"]{0,3}(AKIA[0-9A-Z]{16})'''
+keywords = ["AKIA", "aws_access_key_id", "aws_access_key"]
+
+[[rules]]
+id = "aws-secret-key"
+description = "AWS Secret Access Key"
+regex = '''(?i)(aws(.{0,20})?secret(.{0,20})?access(.{0,20})?key)?[\s'"]{0,3}(=|:|=>)?[\s'"]{0,3}([0-9a-zA-Z\/+=]{40})'''
+keywords = ["aws_secret_access_key", "aws_secret_key"]
+
+[[rules]]
+id = "generic-token"
+description = "Generic token assignment (e.g., TOKEN=...)"
+regex = '''(?i)(token)[\s'"]{0,3}(=|:|=>)[\s'"]{0,3}[0-9a-zA-Z\-_]{8,}'''
+keywords = ["token"]
+
+[[rules]]
+id = "aws-inline-secret"
+description = "AWS credentials hardcoded inline (export ...)"
+regex = '''(?i)(export)?[\s]*aws_(access|secret)_key(id)?[\s]*=.+'''
+keywords = ["export", "aws_access_key_id", "aws_secret_access_key"]
+
+[entropy]
+enabled = false
